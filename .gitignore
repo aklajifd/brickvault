@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# Environment files
+.env
+.env.*
+
+# Docker
+.docker/
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
