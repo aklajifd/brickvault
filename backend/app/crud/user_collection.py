@@ -22,8 +22,13 @@ async def add_to_collection(
     entry = UserCollection(user_id=user_id, **collection_in.model_dump())
     db.add(entry)
     await db.flush()
-    await db.refresh(entry)
-    return entry
+    
+    result = await db.execute(
+        select(UserCollection)
+        .where(UserCollection.id == entry.id)
+        .options(joinedload(UserCollection.lego_set))
+    )
+    return result.scalars().first()
 
 async def get_collection_stats(db: AsyncSession, user_id: str) -> dict:
     result = await db.execute(
