@@ -1,4 +1,5 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, model_validator
+from typing import Any
 
 class LegoSetBase(BaseModel):
     set_number: str
@@ -16,4 +17,11 @@ class LegoSetRead(LegoSetBase):
     theme_name: str | None = None
 
     model_config = {"from_attributes": True}
+    
+    @model_validator(mode="before")
+    @classmethod
+    def extract_theme_name(cls, values: Any) -> Any:
+        if hasattr(values, "theme") and values.theme is not None:
+            values.__dict__["theme_name"] = values.theme.name
+        return values
 

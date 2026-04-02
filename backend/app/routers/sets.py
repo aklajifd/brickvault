@@ -3,6 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.session import get_db
 from app.schemas.lego_set import LegoSetCreate, LegoSetRead
 from app.crud.lego_set import get_sets, get_set_by_id, get_set_by_number, create_set
+from app.crud.theme import get_or_create_theme_by_rebrickable_id
+from app.services.rebrickable import fetch_set_from_rebrickable, fetch_theme_from_rebrickable
 
 router = APIRouter(prefix="/sets", tags=["sets"])
 
@@ -29,4 +31,22 @@ async def lookup_and_create_set(set_number: str, db: AsyncSession = Depends(get_
     existing = await get_set_by_number(db, set_number)
     if existing:
         return existing
-    raise HTTPException(status_code=501, detail="Rebrickable integration coming soon")
+    
+    set_data = await fetch_set_from_rebrickable(set_number)
+    if not set_data:
+        raise HTTPException(status_code=404, detail="Set not found on Rebrickable")
+    
+    theme_id = None
+    rebrickable_theme_id = set_data.pop("rebrickable_theme_id")
+    if rebrickable_theme_id:
+        theme_data = await fetch_theme_from_rebrickable(rebrickable_theme_id)
+        if theme_data:
+            theme = await get_or_create_theme_by_rebrickable_id(
+                db, 
+                rebrickable_id=theme_data["rebrickable_id"],
+                name=theme_data["name"]
+            )
+            theme_id = theme.id
+    
+    set_in = LegoSetCreate(**set_data, theme_id=theme_id)
+    return await create_set(db, set_in)

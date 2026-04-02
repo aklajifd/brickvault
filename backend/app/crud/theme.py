@@ -17,3 +17,21 @@ async def create_theme(db: AsyncSession, theme_in: ThemeCreate) -> Theme:
     await db.flush()
     await db.refresh(theme)
     return theme
+
+async def get_or_create_theme_by_rebrickable_id(
+    db: AsyncSession,
+    rebrickable_id: int,
+    name: str
+) -> Theme:
+    result = await db.execute(
+        select(Theme).where(Theme.rebrickable_id == rebrickable_id)
+    )
+    theme = result.scalars().first()
+    if theme:
+        return theme
+    
+    theme = Theme(name=name, rebrickable_id=rebrickable_id)
+    db.add(theme)
+    await db.flush()
+    await db.refresh(theme)
+    return theme
