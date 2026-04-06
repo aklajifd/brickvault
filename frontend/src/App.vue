@@ -8,7 +8,7 @@
 </template>
 
 <script setup>
-import AppNavbar from './components/layout/AppNavbar.vue'
+import AppNavbar from "./components/layout/AppNavbar.vue";
 </script>
 
 <style>
@@ -19,7 +19,7 @@ import AppNavbar from './components/layout/AppNavbar.vue'
 }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   background-color: #f5f5f5;
   color: #242424;
 }

@@ -1,11 +1,6 @@
 <template>
   <div class="set-card">
-    <img
-      v-if="set.lego_set.image_url"
-      :src="set.lego_set.image_url"
-      :alt="set.lego_set.name"
-      class="set-image"
-    />
+    <img v-if="set.lego_set.image_url" :src="set.lego_set.image_url" :alt="set.lego_set.name" class="set-image" />
     <div v-else class="set-image-placeholder">🧱</div>
     <div class="set-info">
       <h3 class="set-name">{{ set.lego_set.name }}</h3>
