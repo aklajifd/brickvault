@@ -3,13 +3,16 @@ from sqlalchemy import select, func
 from sqlalchemy.orm import joinedload
 from app.models.user_collection import UserCollection
 from app.models.lego_set import LegoSet
+from app.models.theme import Theme
 from app.schemas.user_collection import UserCollectionCreate
 
 async def get_collection(db: AsyncSession, user_id: str) -> list[UserCollection]:
     result = await db.execute(
         select(UserCollection)
         .where(UserCollection.user_id == user_id)
-        .options(joinedload(UserCollection.lego_set))
+        .options(
+            joinedload(UserCollection.lego_set).joinedload(LegoSet.theme)
+        )
         .order_by(UserCollection.id)
     )
     return result.scalars().all()
@@ -22,11 +25,13 @@ async def add_to_collection(
     entry = UserCollection(user_id=user_id, **collection_in.model_dump())
     db.add(entry)
     await db.flush()
-    
+
     result = await db.execute(
         select(UserCollection)
         .where(UserCollection.id == entry.id)
-        .options(joinedload(UserCollection.lego_set))
+        .options(
+            joinedload(UserCollection.lego_set).joinedload(LegoSet.theme)
+        )
     )
     return result.scalars().first()
 
