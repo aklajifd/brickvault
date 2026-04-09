@@ -7,8 +7,24 @@
       <RouterLink to="/themes">Themes</RouterLink>
       <RouterLink to="/stats">Status</RouterLink>
     </div>
+    <button class="signout-btn" @click="handleSignOut">
+      Sign Out
+    </button>
   </nav>
 </template>
+
+<script setup>
+import { useAuthStore } from '../../stores/auth';
+import { useRouter } from 'vue-router'
+
+const authStore = useAuthStore()
+const router = useRouter()
+
+async function handleSignOut() {
+  await authStore.signOut()
+  router.push('/login')
+}
+</script>
 
 <style scoped>
 .navbar {
@@ -39,5 +55,20 @@
 .navbar-links a.router-link-active {
   color: #f59e0b;
   font-weight: bold;
+}
+
+.signout-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 0.4rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.signout-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 </style>
